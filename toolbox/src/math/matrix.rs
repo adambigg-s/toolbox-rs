@@ -4,9 +4,10 @@ use super::traits::Numeric;
 use super::traits::One;
 use super::traits::PrimitiveNumber;
 use super::traits::Zero;
+use super::vector::Vector2;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* MAT2 */
+/* MATRIX 2 */
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Matrix2<T> {
@@ -38,6 +39,10 @@ where
 
         Self::build(inner)
     }
+
+    pub fn splat(value: T) -> Self {
+        Self::build([[value; 2]; 2])
+    }
 }
 
 impl<T> Matrix2<T>
@@ -67,9 +72,19 @@ where
         let inv_det = T::one() / det;
         let m = self.inner;
 
-        let inner = [[m[1][1], -m[0][1]], [-m[1][0], m[0][0]]];
+        #[rustfmt::skip]
+        let inner = [
+            [ m[1][1], -m[0][1]],
+            [-m[1][0],  m[0][0]],
+        ];
 
         Some(Self::build(inner) * inv_det)
+    }
+
+    pub fn trace(self) -> T {
+        let m = self.inner;
+
+        m[0][0] + m[1][1]
     }
 }
 
@@ -89,6 +104,24 @@ where
         });
 
         Self::build(inner)
+    }
+}
+
+impl<T> Mul<Vector2<T>> for Matrix2<T>
+where
+    T: Numeric<T>,
+{
+    type Output = Vector2<T>;
+
+    fn mul(self, vec: Vector2<T>) -> Self::Output {
+        let (m, v) = (self.inner, vec);
+
+        #[rustfmt::skip]
+        let out = Vector2::build(
+            m[0][0] * v.x + m[0][1] * v.y,
+            m[1][0] * v.x + m[1][1] * v.y,
+        );
+        out
     }
 }
 
@@ -115,7 +148,148 @@ where
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* MATN */
+/* MATRIX 3 */
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Matrix3<T> {
+    pub inner: [[T; 3]; 3],
+}
+
+impl<T> Matrix3<T> {
+    pub const DIM: usize = 3;
+
+    pub fn build(inner: [[T; 3]; 3]) -> Self {
+        Self { inner }
+    }
+}
+
+impl<T> Matrix3<T>
+where
+    T: PrimitiveNumber + Zero<T> + One<T>,
+{
+    pub fn zeros() -> Self {
+        Self::build([[T::zero(); 3]; 3])
+    }
+
+    pub fn identity() -> Self {
+        let mut inner = Self::zeros().inner;
+
+        (0..Self::DIM).for_each(|i| {
+            inner[i][i] = T::one();
+        });
+
+        Self::build(inner)
+    }
+
+    pub fn splat(value: T) -> Self {
+        Self::build([[value; 3]; 3])
+    }
+}
+
+// impl<T> Matrix3<T>
+// where
+//     T: Numeric<T>,
+// {
+//     pub fn determinant(self) -> T {
+//         let m = self.inner;
+
+//         m[0][0] * m[1][1] - m[0][1] * m[1][0]
+//     }
+
+//     pub fn transpose(self) -> Self {
+//         let mut m = self.inner;
+
+//         (m[0][1], m[1][0]) = (m[1][0], m[0][1]);
+
+//         Self::build(m)
+//     }
+
+//     pub fn inverse(self) -> Option<Self> {
+//         let det = self.determinant();
+//         if det == T::zero() {
+//             return None;
+//         }
+
+//         let inv_det = T::one() / det;
+//         let m = self.inner;
+
+//         #[rustfmt::skip]
+//         let inner = [
+//             [ m[1][1], -m[0][1]],
+//             [-m[1][0],  m[0][0]],
+//         ];
+
+//         Some(Self::build(inner) * inv_det)
+//     }
+
+//     pub fn trace(self) -> T {
+//         let m = self.inner;
+
+//         m[0][0] + m[1][1]
+//     }
+// }
+
+impl<T> Mul<T> for Matrix3<T>
+where
+    T: Numeric<T>,
+{
+    type Output = Self;
+
+    fn mul(self, scalar: T) -> Self::Output {
+        let mut inner = self.inner;
+
+        (0..Self::DIM).for_each(|i| {
+            (0..Self::DIM).for_each(|j| {
+                inner[i][j] *= scalar;
+            });
+        });
+
+        Self::build(inner)
+    }
+}
+
+// impl<T> Mul<Vector2<T>> for Matrix2<T>
+// where
+//     T: Numeric<T>,
+// {
+//     type Output = Vector2<T>;
+
+//     fn mul(self, vec: Vector2<T>) -> Self::Output {
+//         let (m, v) = (self.inner, vec);
+
+//         #[rustfmt::skip]
+//         let out = Vector2::build(
+//             m[0][0] * v.x + m[0][1] * v.y,
+//             m[1][0] * v.x + m[1][1] * v.y,
+//         );
+//         out
+//     }
+// }
+
+// impl<T> Mul<Self> for Matrix2<T>
+// where
+//     T: Numeric<T>,
+// {
+//     type Output = Self;
+
+//     fn mul(self, other: Self) -> Self::Output {
+//         let (a, b) = (self.inner, other.inner);
+//         let mut inner = Self::zeros().inner;
+
+//         (0..Self::DIM).for_each(|i| {
+//             (0..Self::DIM).for_each(|j| {
+//                 (0..Self::DIM).for_each(|k| {
+//                     inner[i][j] += a[i][k] * b[k][j];
+//                 });
+//             });
+//         });
+
+//         Self::build(inner)
+//     }
+// }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* MATRIX NxN */
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct MatrixN<T, const N: usize> {
@@ -189,7 +363,7 @@ where
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* MATMXN */
+/* MATRIX MxN */
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct MatrixMxN<T, const M: usize, const N: usize> {
