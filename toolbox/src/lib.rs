@@ -1,10 +1,13 @@
 pub mod math;
+pub mod containers;
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
+    fn foo() {
+        let mut vector = Vec::new();
+        vector.push(10);
     }
 }
