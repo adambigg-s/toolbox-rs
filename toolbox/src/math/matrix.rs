@@ -115,6 +115,144 @@ where
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* MATN */
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct MatrixN<T, const N: usize> {
+    pub inner: [[T; N]; N],
+}
+
+impl<T, const N: usize> MatrixN<T, N> {
+    pub fn build(inner: [[T; N]; N]) -> Self {
+        Self { inner }
+    }
+}
+
+impl<T, const N: usize> MatrixN<T, N>
+where
+    T: PrimitiveNumber + Zero<T> + One<T>,
+{
+    pub fn zeros() -> Self {
+        Self::build([[T::zero(); N]; N])
+    }
+
+    pub fn identity() -> Self {
+        let mut inner = Self::zeros().inner;
+
+        (0..N).for_each(|i| {
+            inner[i][i] = T::one();
+        });
+
+        Self::build(inner)
+    }
+}
+
+impl<T, const N: usize> Mul<T> for MatrixN<T, N>
+where
+    T: Numeric<T>,
+{
+    type Output = Self;
+
+    fn mul(self, scalar: T) -> Self::Output {
+        let mut inner = self.inner;
+
+        (0..N).for_each(|i| {
+            (0..N).for_each(|j| {
+                inner[i][j] *= scalar;
+            });
+        });
+
+        Self::build(inner)
+    }
+}
+
+impl<T, const N: usize> Mul<Self> for MatrixN<T, N>
+where
+    T: Numeric<T>,
+{
+    type Output = Self;
+
+    fn mul(self, other: Self) -> Self::Output {
+        let (a, b) = (self.inner, other.inner);
+        let mut inner = Self::zeros().inner;
+
+        (0..N).for_each(|i| {
+            (0..N).for_each(|j| {
+                (0..N).for_each(|k| {
+                    inner[i][j] += a[i][k] * b[k][j];
+                });
+            });
+        });
+
+        Self::build(inner)
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* MATMXN */
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct MatrixMxN<T, const M: usize, const N: usize> {
+    pub inner: [[T; N]; M],
+}
+
+impl<T, const M: usize, const N: usize> MatrixMxN<T, M, N> {
+    pub fn build(inner: [[T; N]; M]) -> Self {
+        Self { inner }
+    }
+}
+
+impl<T, const M: usize, const N: usize> MatrixMxN<T, M, N>
+where
+    T: PrimitiveNumber + Zero<T> + One<T>,
+{
+    pub fn zeros() -> Self {
+        Self::build([[T::zero(); N]; M])
+    }
+}
+
+impl<T, const M: usize, const N: usize> Mul<T> for MatrixMxN<T, M, N>
+where
+    T: Numeric<T>,
+{
+    type Output = Self;
+
+    fn mul(self, scalar: T) -> Self::Output {
+        let mut inner = self.inner;
+
+        (0..M).for_each(|i| {
+            (0..N).for_each(|j| {
+                inner[i][j] *= scalar;
+            });
+        });
+
+        Self::build(inner)
+    }
+}
+
+impl<T, const M: usize, const N: usize, const H: usize> Mul<MatrixMxN<T, M, N>> for MatrixMxN<T, H, M>
+where
+    T: Numeric<T>,
+{
+    type Output = MatrixMxN<T, H, N>;
+
+    fn mul(self, other: MatrixMxN<T, M, N>) -> Self::Output {
+        let (a, b) = (self.inner, other.inner);
+        let mut inner = MatrixMxN::zeros().inner;
+
+        (0..H).for_each(|i| {
+            (0..N).for_each(|j| {
+                (0..M).for_each(|k| {
+                    inner[i][j] += a[i][k] * b[k][j];
+                });
+            });
+        });
+
+        MatrixMxN::build(inner)
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* TEST */
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #[cfg(test)]
