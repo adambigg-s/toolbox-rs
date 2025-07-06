@@ -16,13 +16,13 @@ where
 
 impl<T> PrimitiveNumber for T where T: Default + Clone + Copy {}
 
-pub trait Adds<T>
+pub trait Additive<T>
 where
     Self: PrimitiveNumber + Add<Output = T> + Sub<Output = T> + AddAssign + SubAssign + Zero<T>,
 {
 }
 
-impl<T> Adds<T> for T where
+impl<T> Additive<T> for T where
     T: PrimitiveNumber + Add<Output = T> + Sub<Output = T> + AddAssign + SubAssign + Zero<T>
 {
 }
@@ -46,11 +46,11 @@ impl<T> Multiplicative<T> for T where
 
 pub trait Numeric<T>
 where
-    Self: Adds<T> + Multiplicative<T> + PartialEq + PartialOrd,
+    Self: Additive<T> + Multiplicative<T> + PartialEq + PartialOrd,
 {
 }
 
-impl<T> Numeric<T> for T where T: Adds<T> + Multiplicative<T> + PartialEq + PartialOrd {}
+impl<T> Numeric<T> for T where T: Additive<T> + Multiplicative<T> + PartialEq + PartialOrd {}
 
 pub trait FloatNumber<T>
 where

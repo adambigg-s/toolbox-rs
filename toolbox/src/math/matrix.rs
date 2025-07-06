@@ -10,12 +10,74 @@ use super::vector::Vector2;
 use super::vector::Vector3;
 use super::vector::Vector4;
 
+#[macro_export]
+macro_rules! mat {
+    ($a0:expr, $a1:expr, $a2:expr, $a3:expr) => {
+        mat2($a0, $a1, $a2, $a3)
+    };
+    ($type:ty; $a0:expr, $a1:expr, $a2:expr, $a3:expr) => {
+        mat2($type; $a0, $a1, $a2, $a3)
+    };
+
+    ($a0:expr, $a1:expr, $a2:expr, $a3:expr, $a4:expr, $a5:expr, $a6:expr, $a7:expr, $a8:expr) => {
+        mat3($a0, $a1, $a2, $a3, $a4, $a5, $a6, $a7, $a8)
+    };
+    ($type:ty; $a0:expr, $a1:expr, $a2:expr, $a3:expr, $a4:expr, $a5:expr, $a6:expr, $a7:expr, $a8:expr) => {
+        mat3($type; $a0, $a1, $a2, $a3, $a4, $a5, $a6, $a7, $a8)
+    };
+
+    (
+        $a0:expr , $a1:expr , $a2:expr , $a3:expr ,
+        $a4:expr , $a5:expr , $a6:expr , $a7:expr ,
+        $a8:expr , $a9:expr , $a10:expr, $a11:expr,
+        $a12:expr, $a13:expr, $a14:expr, $a15:expr,
+    ) => {
+        mat4(
+            $a0 , $a1 , $a2 , $a3 ,
+            $a4 , $a5 , $a6 , $a7 ,
+            $a8 , $a9 , $a10, $a11,
+            $a12, $a13, $a14, $a15,
+        )
+    };
+    ($type:ty;
+        $a0:expr , $a1:expr , $a2:expr , $a3:expr ,
+        $a4:expr , $a5:expr , $a6:expr , $a7:expr ,
+        $a8:expr , $a9:expr , $a10:expr, $a11:expr,
+        $a12:expr, $a13:expr, $a14:expr, $a15:expr,
+    ) => {
+        mat4($type;
+            $a0 , $a1 , $a2 , $a3 ,
+            $a4 , $a5 , $a6 , $a7 ,
+            $a8 , $a9 , $a10, $a11,
+            $a12, $a13, $a14, $a15,
+        )
+    };
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* MATRIX 2 */
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Matrix2<T> {
     pub inner: [[T; 2]; 2],
+}
+
+#[macro_export]
+macro_rules! mat2 {
+    ($a0:expr, $a1:expr, $a2:expr, $a3:expr) => {
+        #[rustfmt::skip]
+        Matrix2::build([
+            [$a0 as f32, $a1 as f32],
+            [$a2 as f32, $a3 as f32],
+        ]);
+    };
+    ($type:ty; $a0:expr, $a1:expr, $a2:expr, $a3:expr) => {
+        #[rustfmt::skip]
+        Matrix2::build([
+            [$a0 as $type, $a1 as $type],
+            [$a2 as $type, $a3 as $type],
+        ]);
+    };
 }
 
 impl<T> Matrix2<T> {
@@ -208,6 +270,26 @@ where
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Matrix3<T> {
     pub inner: [[T; 3]; 3],
+}
+
+#[macro_export]
+macro_rules! mat3 {
+    ($a0:expr, $a1:expr, $a2:expr, $a3:expr, $a4:expr, $a5:expr, $a6:expr, $a7:expr, $a8:expr) => {
+        #[rustfmt::skip]
+        Matrix3::build([
+            [$a0 as f32, $a1 as f32, $a2 as f32],
+            [$a3 as f32, $a4 as f32, $a5 as f32],
+            [$a6 as f32, $a7 as f32, $a8 as f32],
+        ]);
+    };
+    ($type:ty; $a0:expr, $a1:expr, $a2:expr, $a3:expr, $a4:expr, $a5:expr, $a6:expr, $a7:expr, $a8:expr) => {
+        #[rustfmt::skip]
+        Matrix3::build([
+            [$a0 as $type, $a1 as $type, $a2 as $type],
+            [$a3 as $type, $a4 as $type, $a5 as $type],
+            [$a6 as $type, $a7 as $type, $a8 as $type],
+        ]);
+    };
 }
 
 impl<T> Matrix3<T> {
@@ -428,6 +510,38 @@ where
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Matrix4<T> {
     pub inner: [[T; 4]; 4],
+}
+
+#[macro_export]
+macro_rules! mat4 {
+    (
+        $a0:expr, $a1:expr, $a2:expr, $a3:expr,
+        $a4:expr, $a5:expr, $a6:expr, $a7:expr,
+        $a8:expr, $a9:expr, $a10:expr, $a11:expr,
+        $a12:expr, $a13:expr, $a14:expr, $a15:expr
+    ) => {
+        #[rustfmt::skip]
+        Matrix4::build([
+            [$a0 as f32 , $a1 as f32 , $a2 as f32 , $a3 as f32 ],
+            [$a4 as f32 , $a5 as f32 , $a6 as f32 , $a7 as f32 ],
+            [$a8 as f32 , $a9 as f32 , $a10 as f32, $a11 as f32],
+            [$a12 as f32, $a13 as f32, $a14 as f32, $a15 as f32],
+        ]);
+    };
+    ($type:ty;
+        $a0:expr, $a1:expr, $a2:expr, $a3:expr,
+        $a4:expr, $a5:expr, $a6:expr, $a7:expr,
+        $a8:expr, $a9:expr, $a10:expr, $a11:expr,
+        $a12:expr, $a13:expr, $a14:expr, $a15:expr
+    ) => {
+        #[rustfmt::skip]
+        Matrix4::build([
+            [$a0 as $type , $a1 as $type , $a2 as $type , $a3 as $type ],
+            [$a4 as $type , $a5 as $type , $a6 as $type , $a7 as $type ],
+            [$a8 as $type , $a9 as $type , $a10 as $type, $a11 as $type],
+            [$a12 as $type, $a13 as $type, $a14 as $type, $a15 as $type],
+        ]);
+    };
 }
 
 impl<T> Matrix4<T> {
