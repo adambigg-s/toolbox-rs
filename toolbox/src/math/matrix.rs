@@ -5,6 +5,7 @@ use super::traits::One;
 use super::traits::PrimitiveNumber;
 use super::traits::Zero;
 use super::vector::Vector2;
+use super::vector::Vector3;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* MATRIX 2 */
@@ -49,7 +50,7 @@ impl<T> Matrix2<T>
 where
     T: Numeric<T>,
 {
-    pub fn determinant(self) -> T {
+    pub fn determinant(&self) -> T {
         let m = self.inner;
 
         m[0][0] * m[1][1] - m[0][1] * m[1][0]
@@ -81,10 +82,30 @@ where
         Some(Self::build(inner) * inv_det)
     }
 
-    pub fn trace(self) -> T {
+    pub fn trace(&self) -> T {
         let m = self.inner;
 
         m[0][0] + m[1][1]
+    }
+
+    #[allow(clippy::needless_range_loop)]
+    pub fn cofactor(&self, i: usize, j: usize) -> T {
+        let m = self.inner;
+        let mut s = T::zero();
+
+        for y in 0..Self::DIM {
+            if y == i {
+                continue;
+            }
+            for x in 0..Self::DIM {
+                if x == j {
+                    continue;
+                }
+                s = m[y][x];
+            }
+        }
+
+        s
     }
 }
 
@@ -186,48 +207,90 @@ where
     }
 }
 
-// impl<T> Matrix3<T>
-// where
-//     T: Numeric<T>,
-// {
-//     pub fn determinant(self) -> T {
-//         let m = self.inner;
+impl<T> Matrix3<T>
+where
+    T: Numeric<T>,
+{
+    pub fn determinant(&self) -> T {
+        let m = self.inner;
 
-//         m[0][0] * m[1][1] - m[0][1] * m[1][0]
-//     }
+        let a = m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]);
+        let b = m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]);
+        let c = m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
 
-//     pub fn transpose(self) -> Self {
-//         let mut m = self.inner;
+        a - b + c
+    }
 
-//         (m[0][1], m[1][0]) = (m[1][0], m[0][1]);
+    pub fn transpose(self) -> Self {
+        let mut m = self.inner;
 
-//         Self::build(m)
-//     }
+        (m[0][1], m[0][2], m[1][2], m[1][0], m[2][0], m[2][1]) =
+            (m[1][0], m[2][0], m[2][1], m[0][1], m[0][2], m[1][2]);
 
-//     pub fn inverse(self) -> Option<Self> {
-//         let det = self.determinant();
-//         if det == T::zero() {
-//             return None;
-//         }
+        Self::build(m)
+    }
 
-//         let inv_det = T::one() / det;
-//         let m = self.inner;
+    pub fn inverse(self) -> Option<Self> {
+        let det = self.determinant();
+        if det == T::zero() {
+            return None;
+        }
 
-//         #[rustfmt::skip]
-//         let inner = [
-//             [ m[1][1], -m[0][1]],
-//             [-m[1][0],  m[0][0]],
-//         ];
+        let inv_det = T::one() / det;
+        let adjoint = self.cofactor_matrix().transpose();
 
-//         Some(Self::build(inner) * inv_det)
-//     }
+        Some(adjoint * inv_det)
+    }
 
-//     pub fn trace(self) -> T {
-//         let m = self.inner;
+    pub fn trace(&self) -> T {
+        let m = self.inner;
 
-//         m[0][0] + m[1][1]
-//     }
-// }
+        m[0][0] + m[1][1] + m[2][2]
+    }
+
+    pub fn cofactor_matrix(&self) -> Self {
+        let mut m = Self::zeros().inner;
+
+        (0..Self::DIM).for_each(|i| {
+            (0..Self::DIM).for_each(|j| {
+                let sign = match (i + j) % 2 == 0 {
+                    | true => T::one(),
+                    | false => -T::one(),
+                };
+                m[i][j] = self.cofactor(i, j) * sign;
+            });
+        });
+
+        Self::build(m)
+    }
+
+    #[allow(clippy::needless_range_loop)]
+    pub fn cofactor(&self, row: usize, col: usize) -> T {
+        let m = self.inner;
+        let mut s = Matrix2::zeros().inner;
+
+        let mut i = 0;
+        for y in 0..Self::DIM {
+            let mut j = 0;
+            if y == row {
+                continue;
+            }
+            for x in 0..Self::DIM {
+                if x == col {
+                    continue;
+                }
+
+                s[i][j] = m[y][x];
+
+                j += 1;
+            }
+
+            i += 1;
+        }
+
+        Matrix2::build(s).determinant()
+    }
+}
 
 impl<T> Mul<T> for Matrix3<T>
 where
@@ -248,45 +311,46 @@ where
     }
 }
 
-// impl<T> Mul<Vector2<T>> for Matrix2<T>
-// where
-//     T: Numeric<T>,
-// {
-//     type Output = Vector2<T>;
+impl<T> Mul<Vector3<T>> for Matrix3<T>
+where
+    T: Numeric<T>,
+{
+    type Output = Vector3<T>;
 
-//     fn mul(self, vec: Vector2<T>) -> Self::Output {
-//         let (m, v) = (self.inner, vec);
+    fn mul(self, vec: Vector3<T>) -> Self::Output {
+        let (m, v) = (self.inner, vec);
 
-//         #[rustfmt::skip]
-//         let out = Vector2::build(
-//             m[0][0] * v.x + m[0][1] * v.y,
-//             m[1][0] * v.x + m[1][1] * v.y,
-//         );
-//         out
-//     }
-// }
+        #[rustfmt::skip]
+        let out = Vector3::build(
+            m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z,
+            m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z,
+            m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z,
+        );
+        out
+    }
+}
 
-// impl<T> Mul<Self> for Matrix2<T>
-// where
-//     T: Numeric<T>,
-// {
-//     type Output = Self;
+impl<T> Mul<Self> for Matrix3<T>
+where
+    T: Numeric<T>,
+{
+    type Output = Self;
 
-//     fn mul(self, other: Self) -> Self::Output {
-//         let (a, b) = (self.inner, other.inner);
-//         let mut inner = Self::zeros().inner;
+    fn mul(self, other: Self) -> Self::Output {
+        let (a, b) = (self.inner, other.inner);
+        let mut inner = Self::zeros().inner;
 
-//         (0..Self::DIM).for_each(|i| {
-//             (0..Self::DIM).for_each(|j| {
-//                 (0..Self::DIM).for_each(|k| {
-//                     inner[i][j] += a[i][k] * b[k][j];
-//                 });
-//             });
-//         });
+        (0..Self::DIM).for_each(|i| {
+            (0..Self::DIM).for_each(|j| {
+                (0..Self::DIM).for_each(|k| {
+                    inner[i][j] += a[i][k] * b[k][j];
+                });
+            });
+        });
 
-//         Self::build(inner)
-//     }
-// }
+        Self::build(inner)
+    }
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* MATRIX NxN */
@@ -448,5 +512,13 @@ mod tests {
         let matrix = Matrix2::build([[1., 2.], [3., 4.]]);
         let inverse = matrix.inverse().unwrap();
         assert!(inverse == Matrix2::build([[-2., 1.], [3. / 2., -1. / 2.]]));
+    }
+
+    #[test]
+    fn matrix3() {
+        let matrix = Matrix3::build([[1., 2., 3.], [3., 4., 4.], [4., 5., 6.]]);
+        let inverse = matrix.inverse();
+        println!("inverse: {inverse:?}");
+        panic!();
     }
 }

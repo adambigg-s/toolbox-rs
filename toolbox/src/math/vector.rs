@@ -12,3 +12,19 @@ impl<T> Vector2<T> {
         Self { x, y }
     }
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* VECTOR 2 */
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Vector3<T> {
+    pub x: T,
+    pub y: T,
+    pub z: T,
+}
+
+impl<T> Vector3<T> {
+    pub fn build(x: T, y: T, z: T) -> Self {
+        Self { x, y, z }
+    }
+}
