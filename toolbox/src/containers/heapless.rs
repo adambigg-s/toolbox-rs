@@ -1,3 +1,6 @@
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* HEAPLESS VEC */
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pub struct Vec<T, const N: usize> {
     data: [Option<T>; N],
     length: usize,
@@ -40,7 +43,13 @@ where
         }
 
         self.length -= 1;
-        self.data[self.len()]
+        let value = self.data[self.len()];
+        self.data[self.len()] = None;
+        value
+    }
+
+    pub fn iter<'d>(&'d self) -> Iter<'d, T, N> {
+        Iter::new(self)
     }
 }
 
@@ -50,5 +59,67 @@ where
 {
     fn default() -> Self {
         Self { data: [None; N], length: 0 }
+    }
+}
+
+impl<'d, T, const N: usize> IntoIterator for &'d Vec<T, N>
+where
+    T: Copy,
+{
+    type Item = T;
+
+    type IntoIter = Iter<'d, T, N>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        Iter::new(self)
+    }
+}
+
+pub struct Iter<'d, T, const N: usize> {
+    vec: &'d Vec<T, N>,
+    index: usize,
+}
+
+impl<'d, T, const N: usize> Iter<'d, T, N> {
+    pub fn new(vec: &'d Vec<T, N>) -> Self {
+        Self { vec, index: 0 }
+    }
+}
+
+impl<'d, T, const N: usize> Iterator for Iter<'d, T, N>
+where
+    T: Copy,
+{
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if !self.index < self.vec.len() {
+            return None;
+        }
+
+        let value = self.vec.data[self.index];
+        self.index += 1;
+        value
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* TEST */
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn vec_iter() {
+        let mut vec = Vec::<i32, 20>::new();
+        vec.push(1);
+        vec.push(2);
+        vec.push(3);
+        let mut iter = vec.into_iter();
+        assert!(iter.next().unwrap() == 1);
+        assert!(iter.next().unwrap() == 2);
+        assert!(iter.next().unwrap() == 3);
+        assert!(iter.next().is_none());
     }
 }
