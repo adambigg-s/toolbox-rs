@@ -64,30 +64,56 @@ pub trait Zero<T> {
     fn zero() -> T;
 }
 
-impl Zero<i32> for i32 {
-    fn zero() -> i32 {
-        0
-    }
+macro_rules! impl_zero {
+    ($type:ty) => {
+        impl Zero<$type> for $type {
+            fn zero() -> $type {
+                return 0 as $type;
+            }
+        }
+    };
 }
 
-impl Zero<f32> for f32 {
-    fn zero() -> f32 {
-        0.
-    }
-}
+impl_zero!(u8);
+impl_zero!(u16);
+impl_zero!(u32);
+impl_zero!(u64);
+impl_zero!(u128);
+impl_zero!(i8);
+impl_zero!(i16);
+impl_zero!(i32);
+impl_zero!(i64);
+impl_zero!(i128);
+impl_zero!(usize);
+impl_zero!(isize);
+impl_zero!(f32);
+impl_zero!(f64);
 
 pub trait One<T> {
     fn one() -> T;
 }
 
-impl One<i32> for i32 {
-    fn one() -> i32 {
-        1
-    }
+macro_rules! impl_one {
+    ($type:ty) => {
+        impl One<$type> for $type {
+            fn one() -> $type {
+                return 1 as $type;
+            }
+        }
+    };
 }
 
-impl One<f32> for f32 {
-    fn one() -> f32 {
-        1.
-    }
-}
+impl_one!(u8);
+impl_one!(u16);
+impl_one!(u32);
+impl_one!(u64);
+impl_one!(u128);
+impl_one!(i8);
+impl_one!(i16);
+impl_one!(i32);
+impl_one!(i64);
+impl_one!(i128);
+impl_one!(usize);
+impl_one!(isize);
+impl_one!(f32);
+impl_one!(f64);
