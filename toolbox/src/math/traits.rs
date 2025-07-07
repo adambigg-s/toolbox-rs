@@ -8,57 +8,60 @@ use std::ops::Neg;
 use std::ops::Sub;
 use std::ops::SubAssign;
 
-pub trait PrimitiveNumber
+pub trait Scalar
 where
-    Self: Default + Clone + Copy,
+    Self: Default + Clone + Copy + Sized,
 {
 }
 
-impl<T> PrimitiveNumber for T where T: Default + Clone + Copy {}
+impl<T> Scalar for T where T: Default + Clone + Copy {}
 
 pub trait Additive<T>
 where
-    Self: PrimitiveNumber + Add<Output = T> + Sub<Output = T> + AddAssign + SubAssign + Zero<T>,
+    Self: Add<Output = T> + Sub<Output = T> + AddAssign + SubAssign + Zero<T> + Sized,
 {
 }
 
-impl<T> Additive<T> for T where
-    T: PrimitiveNumber + Add<Output = T> + Sub<Output = T> + AddAssign + SubAssign + Zero<T>
-{
-}
+impl<T> Additive<T> for T where T: Add<Output = T> + Sub<Output = T> + AddAssign + SubAssign + Zero<T> {}
 
 pub trait Multiplicative<T>
 where
-    Self: PrimitiveNumber
-        + Mul<Output = T>
-        + Div<Output = T>
-        + MulAssign
-        + DivAssign
-        + Neg<Output = T>
-        + One<T>,
+    Self: Mul<Output = T> + Div<Output = T> + MulAssign + DivAssign + Neg<Output = T> + One<T> + Sized,
 {
 }
 
 impl<T> Multiplicative<T> for T where
-    T: PrimitiveNumber + Mul<Output = T> + Div<Output = T> + MulAssign + DivAssign + Neg<Output = T> + One<T>
+    T: Mul<Output = T> + Div<Output = T> + MulAssign + DivAssign + Neg<Output = T> + One<T>
 {
 }
 
 pub trait Numeric<T>
 where
-    Self: Additive<T> + Multiplicative<T> + PartialEq + PartialOrd,
+    Self: Scalar + Additive<T> + Multiplicative<T> + PartialEq + PartialOrd,
 {
 }
 
-impl<T> Numeric<T> for T where T: Additive<T> + Multiplicative<T> + PartialEq + PartialOrd {}
+impl<T> Numeric<T> for T where T: Scalar + Additive<T> + Multiplicative<T> + PartialEq + PartialOrd {}
 
 pub trait FloatNumber<T>
 where
     Self: Numeric<T>,
 {
+    fn sqrt(self) -> Self;
 }
 
-impl<T> FloatNumber<T> for T where T: Numeric<T> {}
+macro_rules! impl_floatnumber {
+    ($type:ty) => {
+        impl FloatNumber<$type> for $type {
+            fn sqrt(self) -> $type {
+                return self.sqrt();
+            }
+        }
+    };
+}
+
+impl_floatnumber!(f32);
+impl_floatnumber!(f64);
 
 pub trait Zero<T> {
     fn zero() -> T;

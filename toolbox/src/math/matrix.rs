@@ -4,26 +4,43 @@ use std::ops::Sub;
 
 use super::traits::Numeric;
 use super::traits::One;
-use super::traits::PrimitiveNumber;
+use super::traits::Scalar;
 use super::traits::Zero;
 use super::vector::Vector2;
 use super::vector::Vector3;
 use super::vector::Vector4;
 
+pub trait MatrixOps<T>
+where
+    Self: Sized,
+{
+    fn determinant(&self) -> T;
+
+    fn transpose(&self) -> Self;
+
+    fn inverse(&self) -> Option<Self>;
+
+    fn trace(&self) -> T;
+
+    fn cofactor(&self, row: usize, col: usize) -> T;
+
+    fn cofactor_matrix(&self) -> Self;
+}
+
 #[macro_export]
-macro_rules! mat {
+macro_rules! matrix {
     ($a0:expr, $a1:expr, $a2:expr, $a3:expr) => {
-        mat2($a0, $a1, $a2, $a3)
+        mat2!($a0, $a1, $a2, $a3)
     };
     ($type:ty; $a0:expr, $a1:expr, $a2:expr, $a3:expr) => {
-        mat2($type; $a0, $a1, $a2, $a3)
+        mat2!($type; $a0, $a1, $a2, $a3)
     };
 
     ($a0:expr, $a1:expr, $a2:expr, $a3:expr, $a4:expr, $a5:expr, $a6:expr, $a7:expr, $a8:expr) => {
-        mat3($a0, $a1, $a2, $a3, $a4, $a5, $a6, $a7, $a8)
+        mat3!($a0, $a1, $a2, $a3, $a4, $a5, $a6, $a7, $a8)
     };
     ($type:ty; $a0:expr, $a1:expr, $a2:expr, $a3:expr, $a4:expr, $a5:expr, $a6:expr, $a7:expr, $a8:expr) => {
-        mat3($type; $a0, $a1, $a2, $a3, $a4, $a5, $a6, $a7, $a8)
+        mat3!($type; $a0, $a1, $a2, $a3, $a4, $a5, $a6, $a7, $a8)
     };
 
     (
@@ -32,7 +49,7 @@ macro_rules! mat {
         $a8:expr , $a9:expr , $a10:expr, $a11:expr,
         $a12:expr, $a13:expr, $a14:expr, $a15:expr,
     ) => {
-        mat4(
+        mat4!(
             $a0 , $a1 , $a2 , $a3 ,
             $a4 , $a5 , $a6 , $a7 ,
             $a8 , $a9 , $a10, $a11,
@@ -45,7 +62,7 @@ macro_rules! mat {
         $a8:expr , $a9:expr , $a10:expr, $a11:expr,
         $a12:expr, $a13:expr, $a14:expr, $a15:expr,
     ) => {
-        mat4($type;
+        mat4!($type;
             $a0 , $a1 , $a2 , $a3 ,
             $a4 , $a5 , $a6 , $a7 ,
             $a8 , $a9 , $a10, $a11,
@@ -63,20 +80,19 @@ pub struct Matrix2<T> {
 }
 
 #[macro_export]
+#[rustfmt::skip]
 macro_rules! mat2 {
     ($a0:expr, $a1:expr, $a2:expr, $a3:expr) => {
-        #[rustfmt::skip]
         Matrix2::build([
             [$a0 as f32, $a1 as f32],
             [$a2 as f32, $a3 as f32],
-        ]);
+        ])
     };
     ($type:ty; $a0:expr, $a1:expr, $a2:expr, $a3:expr) => {
-        #[rustfmt::skip]
         Matrix2::build([
             [$a0 as $type, $a1 as $type],
             [$a2 as $type, $a3 as $type],
-        ]);
+        ])
     };
 }
 
@@ -90,7 +106,7 @@ impl<T> Matrix2<T> {
 
 impl<T> Matrix2<T>
 where
-    T: PrimitiveNumber + Zero<T> + One<T>,
+    T: Scalar + Zero<T> + One<T>,
 {
     pub fn zeros() -> Self {
         Self::build([[T::zero(); 2]; 2])
@@ -111,17 +127,17 @@ where
     }
 }
 
-impl<T> Matrix2<T>
+impl<T> MatrixOps<T> for Matrix2<T>
 where
     T: Numeric<T>,
 {
-    pub fn determinant(&self) -> T {
+    fn determinant(&self) -> T {
         let m = self.inner;
 
         m[0][0] * m[1][1] - m[0][1] * m[1][0]
     }
 
-    pub fn transpose(self) -> Self {
+    fn transpose(&self) -> Self {
         let mut m = self.inner;
 
         (m[0][1], m[1][0]) = (m[1][0], m[0][1]);
@@ -129,7 +145,7 @@ where
         Self::build(m)
     }
 
-    pub fn inverse(self) -> Option<Self> {
+    fn inverse(&self) -> Option<Self> {
         let m = self.inner;
 
         let det = self.determinant();
@@ -138,30 +154,30 @@ where
         }
 
         let inv_det = T::one() / det;
-        let adjoint = Self::build([[m[1][1], -m[0][1]], [-m[1][0], m[0][0]]]);
+        let adjugate = Self::build([[m[1][1], -m[0][1]], [-m[1][0], m[0][0]]]);
 
-        Some(adjoint * inv_det)
+        Some(adjugate * inv_det)
     }
 
-    pub fn trace(&self) -> T {
+    fn trace(&self) -> T {
         let m = self.inner;
 
         m[0][0] + m[1][1]
     }
 
-    pub fn cofactor(&self, i: usize, j: usize) -> T {
+    fn cofactor(&self, row: usize, col: usize) -> T {
         #![allow(clippy::needless_range_loop)]
 
         let m = self.inner;
         let mut sub = T::zero();
 
         for y in 0..Self::DIM {
-            if y == i {
+            if y == row {
                 continue;
             }
 
             for x in 0..Self::DIM {
-                if x == j {
+                if x == col {
                     continue;
                 }
 
@@ -170,6 +186,23 @@ where
         }
 
         sub
+    }
+
+    fn cofactor_matrix(&self) -> Self {
+        let mut m = Self::zeros().inner;
+
+        (0..Self::DIM).for_each(|i| {
+            (0..Self::DIM).for_each(|j| {
+                let sign = match (i + j) % 2 == 0 {
+                    | true => T::one(),
+                    | false => -T::one(),
+                };
+
+                m[i][j] = self.cofactor(i, j) * sign;
+            });
+        });
+
+        Self::build(m)
     }
 }
 
@@ -273,22 +306,21 @@ pub struct Matrix3<T> {
 }
 
 #[macro_export]
+#[rustfmt::skip]
 macro_rules! mat3 {
     ($a0:expr, $a1:expr, $a2:expr, $a3:expr, $a4:expr, $a5:expr, $a6:expr, $a7:expr, $a8:expr) => {
-        #[rustfmt::skip]
         Matrix3::build([
             [$a0 as f32, $a1 as f32, $a2 as f32],
             [$a3 as f32, $a4 as f32, $a5 as f32],
             [$a6 as f32, $a7 as f32, $a8 as f32],
-        ]);
+        ])
     };
     ($type:ty; $a0:expr, $a1:expr, $a2:expr, $a3:expr, $a4:expr, $a5:expr, $a6:expr, $a7:expr, $a8:expr) => {
-        #[rustfmt::skip]
         Matrix3::build([
             [$a0 as $type, $a1 as $type, $a2 as $type],
             [$a3 as $type, $a4 as $type, $a5 as $type],
             [$a6 as $type, $a7 as $type, $a8 as $type],
-        ]);
+        ])
     };
 }
 
@@ -302,7 +334,7 @@ impl<T> Matrix3<T> {
 
 impl<T> Matrix3<T>
 where
-    T: PrimitiveNumber + Zero<T> + One<T>,
+    T: Scalar + Zero<T> + One<T>,
 {
     pub fn zeros() -> Self {
         Self::build([[T::zero(); 3]; 3])
@@ -323,11 +355,11 @@ where
     }
 }
 
-impl<T> Matrix3<T>
+impl<T> MatrixOps<T> for Matrix3<T>
 where
     T: Numeric<T>,
 {
-    pub fn determinant(&self) -> T {
+    fn determinant(&self) -> T {
         let m = self.inner;
 
         let a = m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]);
@@ -337,7 +369,7 @@ where
         a - b + c
     }
 
-    pub fn transpose(self) -> Self {
+    fn transpose(&self) -> Self {
         let mut m = self.inner;
 
         (m[0][1], m[0][2], m[1][2], m[1][0], m[2][0], m[2][1]) =
@@ -346,41 +378,25 @@ where
         Self::build(m)
     }
 
-    pub fn inverse(self) -> Option<Self> {
+    fn inverse(&self) -> Option<Self> {
         let det = self.determinant();
         if det == T::zero() {
             return None;
         }
 
         let inv_det = T::one() / det;
-        let adjoint = self.cofactor_matrix().transpose();
+        let adjugate = self.cofactor_matrix().transpose();
 
-        Some(adjoint * inv_det)
+        Some(adjugate * inv_det)
     }
 
-    pub fn trace(&self) -> T {
+    fn trace(&self) -> T {
         let m = self.inner;
 
         m[0][0] + m[1][1] + m[2][2]
     }
 
-    pub fn cofactor_matrix(&self) -> Self {
-        let mut m = Self::zeros().inner;
-
-        (0..Self::DIM).for_each(|i| {
-            (0..Self::DIM).for_each(|j| {
-                let sign = match (i + j) % 2 == 0 {
-                    | true => T::one(),
-                    | false => -T::one(),
-                };
-                m[i][j] = self.cofactor(i, j) * sign;
-            });
-        });
-
-        Self::build(m)
-    }
-
-    pub fn cofactor(&self, row: usize, col: usize) -> T {
+    fn cofactor(&self, row: usize, col: usize) -> T {
         #![allow(clippy::needless_range_loop)]
 
         let m = self.inner;
@@ -407,6 +423,23 @@ where
         }
 
         Matrix2::build(sub).determinant()
+    }
+
+    fn cofactor_matrix(&self) -> Self {
+        let mut m = Self::zeros().inner;
+
+        (0..Self::DIM).for_each(|i| {
+            (0..Self::DIM).for_each(|j| {
+                let sign = match (i + j) % 2 == 0 {
+                    | true => T::one(),
+                    | false => -T::one(),
+                };
+
+                m[i][j] = self.cofactor(i, j) * sign;
+            });
+        });
+
+        Self::build(m)
     }
 }
 
@@ -513,34 +546,33 @@ pub struct Matrix4<T> {
 }
 
 #[macro_export]
+#[rustfmt::skip]
 macro_rules! mat4 {
     (
-        $a0:expr, $a1:expr, $a2:expr, $a3:expr,
-        $a4:expr, $a5:expr, $a6:expr, $a7:expr,
-        $a8:expr, $a9:expr, $a10:expr, $a11:expr,
-        $a12:expr, $a13:expr, $a14:expr, $a15:expr
+        $a0:expr , $a1:expr , $a2:expr , $a3:expr ,
+        $a4:expr , $a5:expr , $a6:expr , $a7:expr ,
+        $a8:expr , $a9:expr , $a10:expr, $a11:expr,
+        $a12:expr, $a13:expr, $a14:expr, $a15:expr,
     ) => {
-        #[rustfmt::skip]
         Matrix4::build([
             [$a0 as f32 , $a1 as f32 , $a2 as f32 , $a3 as f32 ],
             [$a4 as f32 , $a5 as f32 , $a6 as f32 , $a7 as f32 ],
             [$a8 as f32 , $a9 as f32 , $a10 as f32, $a11 as f32],
             [$a12 as f32, $a13 as f32, $a14 as f32, $a15 as f32],
-        ]);
+        ])
     };
     ($type:ty;
-        $a0:expr, $a1:expr, $a2:expr, $a3:expr,
-        $a4:expr, $a5:expr, $a6:expr, $a7:expr,
-        $a8:expr, $a9:expr, $a10:expr, $a11:expr,
-        $a12:expr, $a13:expr, $a14:expr, $a15:expr
+        $a0:expr , $a1:expr , $a2:expr , $a3:expr ,
+        $a4:expr , $a5:expr , $a6:expr , $a7:expr ,
+        $a8:expr , $a9:expr , $a10:expr, $a11:expr,
+        $a12:expr, $a13:expr, $a14:expr, $a15:expr,
     ) => {
-        #[rustfmt::skip]
         Matrix4::build([
             [$a0 as $type , $a1 as $type , $a2 as $type , $a3 as $type ],
             [$a4 as $type , $a5 as $type , $a6 as $type , $a7 as $type ],
             [$a8 as $type , $a9 as $type , $a10 as $type, $a11 as $type],
             [$a12 as $type, $a13 as $type, $a14 as $type, $a15 as $type],
-        ]);
+        ])
     };
 }
 
@@ -554,7 +586,7 @@ impl<T> Matrix4<T> {
 
 impl<T> Matrix4<T>
 where
-    T: PrimitiveNumber + Zero<T> + One<T>,
+    T: Scalar + Zero<T> + One<T>,
 {
     pub fn zeros() -> Self {
         Self::build([[T::zero(); 4]; 4])
@@ -575,11 +607,11 @@ where
     }
 }
 
-impl<T> Matrix4<T>
+impl<T> MatrixOps<T> for Matrix4<T>
 where
     T: Numeric<T>,
 {
-    pub fn determinant(&self) -> T {
+    fn determinant(&self) -> T {
         let m = self.inner;
 
         m[0][0] * self.cofactor(0, 0)
@@ -588,7 +620,7 @@ where
             + m[0][3] * self.cofactor(0, 3)
     }
 
-    pub fn transpose(self) -> Self {
+    fn transpose(&self) -> Self {
         let mut m = self.inner;
 
         for i in 0..Self::DIM {
@@ -604,41 +636,25 @@ where
         Self::build(m)
     }
 
-    pub fn inverse(self) -> Option<Self> {
+    fn inverse(&self) -> Option<Self> {
         let det = self.determinant();
         if det == T::zero() {
             return None;
         }
 
         let inv_det = T::one() / det;
-        let adjoint = self.cofactor_matrix().transpose();
+        let adjugate = self.cofactor_matrix().transpose();
 
-        Some(adjoint * inv_det)
+        Some(adjugate * inv_det)
     }
 
-    pub fn trace(&self) -> T {
+    fn trace(&self) -> T {
         let m = self.inner;
 
         m[0][0] + m[1][1] + m[2][2] + m[3][3]
     }
 
-    pub fn cofactor_matrix(&self) -> Self {
-        let mut m = Self::zeros().inner;
-
-        (0..Self::DIM).for_each(|i| {
-            (0..Self::DIM).for_each(|j| {
-                let sign = match (i + j) % 2 == 0 {
-                    | true => T::one(),
-                    | false => -T::one(),
-                };
-                m[i][j] = self.cofactor(i, j) * sign;
-            });
-        });
-
-        Self::build(m)
-    }
-
-    pub fn cofactor(&self, row: usize, col: usize) -> T {
+    fn cofactor(&self, row: usize, col: usize) -> T {
         #![allow(clippy::needless_range_loop)]
 
         let m = self.inner;
@@ -665,6 +681,23 @@ where
         }
 
         Matrix3::build(sub).determinant()
+    }
+
+    fn cofactor_matrix(&self) -> Self {
+        let mut m = Self::zeros().inner;
+
+        (0..Self::DIM).for_each(|i| {
+            (0..Self::DIM).for_each(|j| {
+                let sign = match (i + j) % 2 == 0 {
+                    | true => T::one(),
+                    | false => -T::one(),
+                };
+
+                m[i][j] = self.cofactor(i, j) * sign;
+            });
+        });
+
+        Self::build(m)
     }
 }
 
@@ -770,7 +803,7 @@ where
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* MATRIX NxN */
+/* MATRIX N */
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct MatrixN<T, const N: usize> {
@@ -785,7 +818,7 @@ impl<T, const N: usize> MatrixN<T, N> {
 
 impl<T, const N: usize> MatrixN<T, N>
 where
-    T: PrimitiveNumber + Zero<T> + One<T>,
+    T: Scalar + Zero<T> + One<T>,
 {
     pub fn zeros() -> Self {
         Self::build([[T::zero(); N]; N])
@@ -859,7 +892,7 @@ impl<T, const M: usize, const N: usize> MatrixMxN<T, M, N> {
 
 impl<T, const M: usize, const N: usize> MatrixMxN<T, M, N>
 where
-    T: PrimitiveNumber + Zero<T> + One<T>,
+    T: Scalar + Zero<T> + One<T>,
 {
     pub fn zeros() -> Self {
         Self::build([[T::zero(); N]; M])
