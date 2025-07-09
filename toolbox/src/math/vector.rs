@@ -32,38 +32,38 @@ where
 #[macro_export]
 macro_rules! vector {
     ($a:expr) => {
-        vec1!($a)
+        $crate::vec1!($a)
     };
     ($type:ty; $a:expr) => {
-        vec1!($type; $a)
+        $crate::vec1!($type; $a)
     };
 
     ($a:expr, $b:expr) => {
-        vec2!($a, $b)
+        $crate::vec2!($a, $b)
     };
     ($type:ty; $a:expr, $b: expr) => {
-        vec2!($type; $a, $b)
+        $crate::vec2!($type; $a, $b)
     };
 
     ($a:expr, $b:expr, $c:expr) => {
-        vec3!($a, $b, $c)
+        $crate::vec3!($a, $b, $c)
     };
     ($type:ty; $a:expr, $b:expr, $c:expr) => {
-        vec3!($type; $a, $b, $c)
+        $crate::vec3!($type; $a, $b, $c)
     };
 
     ($a:expr, $b:expr, $c:expr, $d:expr) => {
-        vec4!($a, $b, $c, $d)
+        $crate::vec4!($a, $b, $c, $d)
     };
     ($type:ty; $a:expr, $b:expr, $c:expr, $d:expr) => {
-        vec4!($type; $a, $b, $c, $d)
+        $crate::vec4!($type; $a, $b, $c, $d)
     };
 
     ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr) => {
-        vec5!($a, $b, $c, $d, $e)
+        $crate::vec5!($a, $b, $c, $d, $e)
     };
     ($type:ty; $a:expr, $b:expr, $c:expr, $d:expr, $e:expr) => {
-        vec5!($type; $a, $b, $c, $d, $e)
+        $crate::vec5!($type; $a, $b, $c, $d, $e)
     };
 }
 

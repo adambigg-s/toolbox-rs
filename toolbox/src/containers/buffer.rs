@@ -59,3 +59,67 @@ where
         y * self.width + x
     }
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* BUFFER 3D */
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+pub struct Buffer3<T> {
+    pub data: Vec<T>,
+    pub clear_value: T,
+    pub width: usize,
+    pub height: usize,
+    pub depth: usize,
+}
+
+impl<T> Buffer3<T>
+where
+    T: Clone + Copy,
+{
+    pub fn new(width: usize, height: usize, depth: usize, clear_value: T) -> Self {
+        Self {
+            data: vec![clear_value; width * height * depth],
+            clear_value,
+            width,
+            height,
+            depth,
+        }
+    }
+
+    pub fn clear(&mut self) {
+        self.data.fill(self.clear_value);
+    }
+
+    pub fn get(&self, x: usize, y: usize, z: usize) -> Option<T> {
+        if !self.inbounds(x, y, z) {
+            return None;
+        }
+
+        let index = self.index(x, y, z);
+        Some(self.data[index])
+    }
+
+    pub fn get_unchecked(&self, x: usize, y: usize, z: usize) -> T {
+        let index = self.index(x, y, z);
+        self.data[index]
+    }
+
+    pub fn set(&mut self, x: usize, y: usize, z: usize, data: T) -> Option<()> {
+        if !self.inbounds(x, y, z) {
+            return None;
+        }
+
+        let index = self.index(x, y, z);
+        self.data[index] = data;
+        Some(())
+    }
+
+    #[inline]
+    pub fn inbounds(&self, x: usize, y: usize, z: usize) -> bool {
+        x < self.width && y < self.height && z < self.depth
+    }
+
+    #[inline]
+    fn index(&self, x: usize, y: usize, z: usize) -> usize {
+        z * self.width * self.height + y * self.width + x
+    }
+}

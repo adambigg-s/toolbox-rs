@@ -2,8 +2,8 @@
 /* HEAPLESS VEC */
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pub struct Vec<T, const N: usize> {
-    data: [Option<T>; N],
-    length: usize,
+    pub data: [Option<T>; N],
+    pub length: usize,
 }
 
 impl<T, const N: usize> Vec<T, N>

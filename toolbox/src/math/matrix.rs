@@ -37,37 +37,37 @@ where
 #[macro_export]
 macro_rules! matrix {
     ($a0:expr) => {
-        mat1!($a0)
+        $crate::mat1!($a0)
     };
     ($type:ty; $a0:expr) => {
-        mat1!($type; $a0)
+        $crate::mat1!($type; $a0)
     };
 
     ($a0:expr, $a1:expr, $a2:expr, $a3:expr) => {
-        mat2!(
+        $crate::mat2!(
             $a0, $a1,
-            $a2, $a3,
+            $a2, $a3
         )
     };
     ($type:ty; $a0:expr, $a1:expr, $a2:expr, $a3:expr) => {
-        mat2!($type;
+        $crate::mat2!($type;
             $a0, $a1,
-            $a2, $a3,
+            $a2, $a3
         )
     };
 
     ($a0:expr, $a1:expr, $a2:expr, $a3:expr, $a4:expr, $a5:expr, $a6:expr, $a7:expr, $a8:expr) => {
-        mat3!(
+        $crate::mat3!(
             $a0, $a1, $a2,
             $a3, $a4, $a5,
-            $a6, $a7, $a8,
+            $a6, $a7, $a8
         )
     };
     ($type:ty; $a0:expr, $a1:expr, $a2:expr, $a3:expr, $a4:expr, $a5:expr, $a6:expr, $a7:expr, $a8:expr) => {
-        mat3!($type;
+        $crate::mat3!($type;
             $a0, $a1, $a2,
             $a3, $a4, $a5,
-            $a6, $a7, $a8,
+            $a6, $a7, $a8
         )
     };
 
@@ -77,11 +77,11 @@ macro_rules! matrix {
         $a8:expr , $a9:expr , $a10:expr, $a11:expr,
         $a12:expr, $a13:expr, $a14:expr, $a15:expr,
     ) => {
-        mat4!(
+        $crate::mat4!(
             $a0 , $a1 , $a2 , $a3 ,
             $a4 , $a5 , $a6 , $a7 ,
             $a8 , $a9 , $a10, $a11,
-            $a12, $a13, $a14, $a15,
+            $a12, $a13, $a14, $a15
         )
     };
     ($type:ty;
@@ -90,11 +90,11 @@ macro_rules! matrix {
         $a8:expr , $a9:expr , $a10:expr, $a11:expr,
         $a12:expr, $a13:expr, $a14:expr, $a15:expr,
     ) => {
-        mat4!($type;
+        $crate::mat4!($type;
             $a0 , $a1 , $a2 , $a3 ,
             $a4 , $a5 , $a6 , $a7 ,
             $a8 , $a9 , $a10, $a11,
-            $a12, $a13, $a14, $a15,
+            $a12, $a13, $a14, $a15
         )
     };
 
@@ -105,12 +105,12 @@ macro_rules! matrix {
         $a15:expr, $a16:expr, $a17:expr, $a18:expr, $a19:expr,
         $a20:expr, $a21:expr, $a22:expr, $a23:expr, $a24:expr,
     ) => {
-        mat5!(
+        $crate::mat5!(
             $a0 , $a1 , $a2 , $a3 , $a4 ,
             $a5 , $a6 , $a7 , $a8 , $a9 ,
             $a10, $a11, $a12, $a13, $a14,
             $a15, $a16, $a17, $a18, $a19,
-            $a20, $a21, $a22, $a23, $a24,
+            $a20, $a21, $a22, $a23, $a24
         )
     };
     ($type:ty;
@@ -120,12 +120,12 @@ macro_rules! matrix {
         $a15:expr, $a16:expr, $a17:expr, $a18:expr, $a19:expr,
         $a20:expr, $a21:expr, $a22:expr, $a23:expr, $a24:expr,
     ) => {
-        mat5!($type;
+        $crate::mat5!($type;
             $a0 , $a1 , $a2 , $a3 , $a4 ,
             $a5 , $a6 , $a7 , $a8 , $a9 ,
             $a10, $a11, $a12, $a13, $a14,
             $a15, $a16, $a17, $a18, $a19,
-            $a20, $a21, $a22, $a23, $a24,
+            $a20, $a21, $a22, $a23, $a24
         )
     };
 }
