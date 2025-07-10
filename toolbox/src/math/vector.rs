@@ -31,39 +31,53 @@ where
 
 #[macro_export]
 macro_rules! vector {
-    ($a:expr) => {
+    ($a:expr $(,)?) => {
         $crate::vec1!($a)
     };
-    ($type:ty; $a:expr) => {
+    ($type:ty; $a:expr $(,)?) => {
         $crate::vec1!($type; $a)
     };
 
-    ($a:expr, $b:expr) => {
+    ($a:expr, $b:expr $(,)?) => {
         $crate::vec2!($a, $b)
     };
-    ($type:ty; $a:expr, $b: expr) => {
+    ($type:ty; $a:expr, $b: expr $(,)?) => {
         $crate::vec2!($type; $a, $b)
     };
 
-    ($a:expr, $b:expr, $c:expr) => {
+    ($a:expr, $b:expr, $c:expr $(,)?) => {
         $crate::vec3!($a, $b, $c)
     };
-    ($type:ty; $a:expr, $b:expr, $c:expr) => {
+    ($type:ty; $a:expr, $b:expr, $c:expr $(,)?) => {
         $crate::vec3!($type; $a, $b, $c)
     };
 
-    ($a:expr, $b:expr, $c:expr, $d:expr) => {
+    ($a:expr, $b:expr, $c:expr, $d:expr $(,)?) => {
         $crate::vec4!($a, $b, $c, $d)
     };
-    ($type:ty; $a:expr, $b:expr, $c:expr, $d:expr) => {
+    ($type:ty; $a:expr, $b:expr, $c:expr, $d:expr $(,)?) => {
         $crate::vec4!($type; $a, $b, $c, $d)
     };
 
-    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr) => {
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr $(,)?) => {
         $crate::vec5!($a, $b, $c, $d, $e)
     };
-    ($type:ty; $a:expr, $b:expr, $c:expr, $d:expr, $e:expr) => {
+    ($type:ty; $a:expr, $b:expr, $c:expr, $d:expr, $e:expr $(,)?) => {
         $crate::vec5!($type; $a, $b, $c, $d, $e)
+    };
+}
+
+#[macro_export]
+macro_rules! swizzle {
+    ($vec:expr; $($wild:tt),+ $(,)?) => {
+        $crate::vector!($(swizzle!(@comp; $vec, $wild)),+)
+    };
+
+    (@comp; $vec:expr, $field:ident) => {
+        $vec.$field
+    };
+    (@comp; $vec:expr, $value:expr) => {
+        $value
     };
 }
 
@@ -795,5 +809,19 @@ mod tests {
         let v2 = vector!(0, 0, 10);
         let product = v1 % v2;
         assert!(product == Vector3::build(0., -100., 0.));
+    }
+
+    #[test]
+    fn swizzle_testing() {
+        let vector = Vector3::build(99, 1, 1);
+        let vec = swizzle!(vector; x);
+        assert!(vec == Vector1::build(99.));
+    }
+
+    #[test]
+    fn improved_swizzle() {
+        let vector = Vector3::build(99, 1, 1);
+        let vec = swizzle!(vector; x, z, 3);
+        assert!(vec == Vector3::build(99., 1., 3.))
     }
 }
