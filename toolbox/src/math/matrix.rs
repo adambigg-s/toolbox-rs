@@ -11,6 +11,7 @@ use super::vector::Vector2;
 use super::vector::Vector3;
 use super::vector::Vector4;
 use super::vector::Vector5;
+use super::vector::VectorN;
 
 pub trait BasicMatrixOps<T>
 where
@@ -75,7 +76,7 @@ macro_rules! matrix {
         $a0:expr , $a1:expr , $a2:expr , $a3:expr ,
         $a4:expr , $a5:expr , $a6:expr , $a7:expr ,
         $a8:expr , $a9:expr , $a10:expr, $a11:expr,
-        $a12:expr, $a13:expr, $a14:expr, $a15:expr,
+        $a12:expr, $a13:expr, $a14:expr, $a15:expr
     ) => {
         $crate::mat4!(
             $a0 , $a1 , $a2 , $a3 ,
@@ -88,7 +89,7 @@ macro_rules! matrix {
         $a0:expr , $a1:expr , $a2:expr , $a3:expr ,
         $a4:expr , $a5:expr , $a6:expr , $a7:expr ,
         $a8:expr , $a9:expr , $a10:expr, $a11:expr,
-        $a12:expr, $a13:expr, $a14:expr, $a15:expr,
+        $a12:expr, $a13:expr, $a14:expr, $a15:expr
     ) => {
         $crate::mat4!($type;
             $a0 , $a1 , $a2 , $a3 ,
@@ -103,7 +104,7 @@ macro_rules! matrix {
         $a5:expr , $a6:expr , $a7:expr , $a8:expr , $a9:expr ,
         $a10:expr, $a11:expr, $a12:expr, $a13:expr, $a14:expr,
         $a15:expr, $a16:expr, $a17:expr, $a18:expr, $a19:expr,
-        $a20:expr, $a21:expr, $a22:expr, $a23:expr, $a24:expr,
+        $a20:expr, $a21:expr, $a22:expr, $a23:expr, $a24:expr
     ) => {
         $crate::mat5!(
             $a0 , $a1 , $a2 , $a3 , $a4 ,
@@ -118,7 +119,7 @@ macro_rules! matrix {
         $a5:expr , $a6:expr , $a7:expr , $a8:expr , $a9:expr ,
         $a10:expr, $a11:expr, $a12:expr, $a13:expr, $a14:expr,
         $a15:expr, $a16:expr, $a17:expr, $a18:expr, $a19:expr,
-        $a20:expr, $a21:expr, $a22:expr, $a23:expr, $a24:expr,
+        $a20:expr, $a21:expr, $a22:expr, $a23:expr, $a24:expr
     ) => {
         $crate::mat5!($type;
             $a0 , $a1 , $a2 , $a3 , $a4 ,
@@ -699,7 +700,7 @@ macro_rules! mat4 {
         $a0:expr , $a1:expr , $a2:expr , $a3:expr ,
         $a4:expr , $a5:expr , $a6:expr , $a7:expr ,
         $a8:expr , $a9:expr , $a10:expr, $a11:expr,
-        $a12:expr, $a13:expr, $a14:expr, $a15:expr,
+        $a12:expr, $a13:expr, $a14:expr, $a15:expr
     ) => {
         Matrix4::build([
             [$a0 as f32 , $a1 as f32 , $a2 as f32 , $a3 as f32 ],
@@ -712,7 +713,7 @@ macro_rules! mat4 {
         $a0:expr , $a1:expr , $a2:expr , $a3:expr ,
         $a4:expr , $a5:expr , $a6:expr , $a7:expr ,
         $a8:expr , $a9:expr , $a10:expr, $a11:expr,
-        $a12:expr, $a13:expr, $a14:expr, $a15:expr,
+        $a12:expr, $a13:expr, $a14:expr, $a15:expr
     ) => {
         Matrix4::build([
             [$a0 as $type , $a1 as $type , $a2 as $type , $a3 as $type ],
@@ -970,7 +971,7 @@ macro_rules! mat5 {
         $a5:expr , $a6:expr , $a7:expr , $a8:expr , $a9:expr ,
         $a10:expr, $a11:expr, $a12:expr, $a13:expr, $a14:expr,
         $a15:expr, $a16:expr, $a17:expr, $a18:expr, $a19:expr,
-        $a20:expr, $a21:expr, $a22:expr, $a23:expr, $a24:expr,
+        $a20:expr, $a21:expr, $a22:expr, $a23:expr, $a24:expr
     ) => {
         Matrix5::build([
             [$a0 as f32 , $a1 as f32 , $a2 as f32 , $a3 as f32 , $a4 as f32 ],
@@ -985,7 +986,7 @@ macro_rules! mat5 {
         $a5:expr , $a6:expr , $a7:expr , $a8:expr , $a9:expr ,
         $a10:expr, $a11:expr, $a12:expr, $a13:expr, $a14:expr,
         $a15:expr, $a16:expr, $a17:expr, $a18:expr, $a19:expr,
-        $a20:expr, $a21:expr, $a22:expr, $a23:expr, $a24:expr,
+        $a20:expr, $a21:expr, $a22:expr, $a23:expr, $a24:expr
     ) => {
         Matrix5::build([
             [$a0 as $type , $a1 as $type , $a2 as $type , $a3 as $type , $a4 as $type ],
@@ -1263,6 +1264,115 @@ where
 
         Self::build(inner)
     }
+
+    pub fn splat(value: T) -> Self {
+        Self::build([[value; N]; N])
+    }
+}
+
+impl<T, const N: usize> BasicMatrixOps<T> for MatrixN<T, N>
+where
+    T: Numeric<T>,
+{
+    fn determinant(&self) -> T {
+        let m = self.inner;
+        let mut out = T::zero();
+
+        for i in 0..N {
+            out += m[0][i] * self.cofactor(0, i);
+        }
+
+        out
+    }
+
+    fn transpose(&self) -> Self {
+        let mut m = self.inner;
+        for i in 0..N {
+            for j in 0..N {
+                if i == j {
+                    continue;
+                }
+
+                (m[i][j], m[j][i]) = (m[j][i], m[i][j]);
+            }
+        }
+
+        Self::build(m)
+    }
+
+    fn trace(&self) -> T {
+        let m = self.inner;
+        let mut out = T::zero();
+
+        (0..N).for_each(|i| {
+            out += m[i][i];
+        });
+
+        out
+    }
+
+    fn cofactor(&self, row: usize, col: usize) -> T {
+        #![allow(clippy::needless_range_loop)]
+
+        let m = self.inner;
+        let mut sub = Matrix3::zeros().inner;
+
+        let mut i = 0;
+        for y in 0..N {
+            if y == row {
+                continue;
+            }
+
+            let mut j = 0;
+            for x in 0..N {
+                if x == col {
+                    continue;
+                }
+
+                sub[i][j] = m[y][x];
+
+                j += 1;
+            }
+
+            i += 1;
+        }
+
+        Matrix3::build(sub).determinant()
+    }
+
+    fn cofactor_matrix(&self) -> Self {
+        let mut m = Self::zeros().inner;
+
+        (0..N).for_each(|i| {
+            (0..N).for_each(|j| {
+                let sign = match (i + j) % 2 == 0 {
+                    | true => T::one(),
+                    | false => -T::one(),
+                };
+
+                m[i][j] = self.cofactor(i, j) * sign;
+            });
+        });
+
+        Self::build(m)
+    }
+}
+
+impl<T, const N: usize> FloatMatrixOps<T> for MatrixN<T, N>
+where
+    T: FloatNumber<T>,
+{
+    fn inverse(&self) -> Option<Self> {
+        let det = self.determinant();
+        if det == T::zero() {
+            return None;
+        }
+
+        let inv_det = T::one() / det;
+        let adjugate = self.cofactor_matrix().transpose();
+
+        Some(adjugate * inv_det)
+    }
 }
 
 impl<T, const N: usize> Mul<T> for MatrixN<T, N>
@@ -1281,6 +1391,26 @@ where
         });
 
         Self::build(inner)
+    }
+}
+
+impl<T, const N: usize> Mul<VectorN<T, N>> for MatrixN<T, N>
+where
+    T: Numeric<T>,
+{
+    type Output = VectorN<T, N>;
+
+    fn mul(self, vec: VectorN<T, N>) -> Self::Output {
+        let (m, v) = (self.inner, vec.inner);
+        let mut out = VectorN::zeros().inner;
+
+        (0..N).for_each(|i| {
+            (0..N).for_each(|j| {
+                out[i] += m[i][j] * v[j];
+            });
+        });
+
+        VectorN::build(out)
     }
 }
 
@@ -1327,6 +1457,10 @@ where
     pub fn zeros() -> Self {
         Self::build([[T::zero(); N]; M])
     }
+
+    pub fn splat(value: T) -> Self {
+        Self::build([[value; N]; M])
+    }
 }
 
 impl<T, const M: usize, const N: usize> Mul<T> for MatrixMxN<T, M, N>
@@ -1345,6 +1479,26 @@ where
         });
 
         Self::build(inner)
+    }
+}
+
+impl<T, const M: usize, const N: usize> Mul<VectorN<T, N>> for MatrixMxN<T, M, N>
+where
+    T: Numeric<T>,
+{
+    type Output = VectorN<T, M>;
+
+    fn mul(self, vec: VectorN<T, N>) -> Self::Output {
+        let (m, v) = (self.inner, vec.inner);
+        let mut out = VectorN::zeros().inner;
+
+        (0..M).for_each(|i| {
+            (0..N).for_each(|j| {
+                out[i] += m[i][j] * v[j];
+            });
+        });
+
+        VectorN::build(out)
     }
 }
 

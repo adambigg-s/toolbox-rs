@@ -627,7 +627,7 @@ where
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct VectorN<T, const N: usize> {
-    inner: [T; N],
+    pub inner: [T; N],
 }
 
 impl<T, const N: usize> VectorN<T, N> {
