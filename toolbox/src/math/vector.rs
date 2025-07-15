@@ -150,6 +150,10 @@ where
     pub fn determinant(self, other: Self) -> T {
         self.x * other.y - self.y * other.x
     }
+
+    pub fn array(&self) -> [T; 2] {
+        [self.x, self.y]
+    }
 }
 
 impl<T> BasicVectorOps<T> for Vector2<T>
@@ -292,6 +296,10 @@ where
             self.x * other.y - self.y * other.x,
         )
     }
+
+    pub fn array(&self) -> [T; 3] {
+        [self.x, self.y, self.z]
+    }
 }
 
 impl<T> BasicVectorOps<T> for Vector3<T>
@@ -424,6 +432,15 @@ impl<T> Vector4<T> {
     }
 }
 
+impl<T> Vector4<T>
+where
+    T: Numeric<T>,
+{
+    pub fn array(&self) -> [T; 4] {
+        [self.x, self.y, self.z, self.w]
+    }
+}
+
 impl<T> BasicVectorOps<T> for Vector4<T>
 where
     T: Numeric<T>,
@@ -544,6 +561,15 @@ impl<T> Vector5<T> {
     }
 }
 
+impl<T> Vector5<T>
+where
+    T: Numeric<T>,
+{
+    pub fn array(&self) -> [T; 5] {
+        [self.x, self.y, self.z, self.w, self.t]
+    }
+}
+
 impl<T> BasicVectorOps<T> for Vector5<T>
 where
     T: Numeric<T>,
@@ -647,6 +673,15 @@ pub struct VectorN<T, const N: usize> {
 impl<T, const N: usize> VectorN<T, N> {
     pub fn build(inner: [T; N]) -> Self {
         Self { inner }
+    }
+}
+
+impl<T, const N: usize> VectorN<T, N>
+where
+    T: Numeric<T>,
+{
+    pub fn array(&self) -> [T; N] {
+        self.inner
     }
 }
 
