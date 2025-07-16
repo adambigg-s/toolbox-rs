@@ -1,4 +1,7 @@
+use std::ops::Add;
 use std::ops::Div;
+use std::ops::Mul;
+use std::ops::Sub;
 
 use super::traits::Numeric;
 
@@ -10,7 +13,7 @@ pub struct Interpolator<T, D> {
 
 impl<T, D> Interpolator<T, D>
 where
-    T: Numeric<T>,
+    T: Add<Output = T> + Sub<Output = T> + Clone + Copy,
     D: Numeric<D>,
 {
     pub fn build(start: T, end: T, steps: D) -> Self
@@ -23,21 +26,21 @@ where
     #[inline(always)]
     pub fn progress(&mut self) -> T {
         let out = self.curr;
-        self.curr += self.step;
+        self.curr = self.curr + self.step;
         out
     }
 
     #[inline(always)]
     pub fn regress(&mut self) -> T {
         let out = self.curr;
-        self.curr -= self.step;
+        self.curr = self.curr - self.step;
         out
     }
 }
 
 impl<'d, T, D> IntoIterator for &'d mut Interpolator<T, D>
 where
-    T: Numeric<T>,
+    T: Add<Output = T> + Sub<Output = T> + Clone + Copy,
     D: Numeric<D>,
 {
     type Item = T;
@@ -66,7 +69,7 @@ where
 
 impl<'d, T, D> Iterator for Iter<'d, T, D>
 where
-    T: Numeric<T>,
+    T: Add<Output = T> + Sub<Output = T> + Clone + Copy,
     D: Numeric<D>,
 {
     type Item = T;
