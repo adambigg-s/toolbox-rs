@@ -48,6 +48,8 @@ where
     Self: Numeric<T>,
 {
     fn sqrt(self) -> Self;
+
+    fn constant(value: f64) -> Self;
 }
 
 macro_rules! impl_floatnumber {
@@ -55,6 +57,10 @@ macro_rules! impl_floatnumber {
         impl FloatNumber<$type> for $type {
             fn sqrt(self) -> $type {
                 return self.sqrt();
+            }
+
+            fn constant(value: f64) -> $type {
+                return value as $type;
             }
         }
     };
