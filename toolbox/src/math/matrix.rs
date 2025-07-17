@@ -184,7 +184,7 @@ where
         Self::build(T::one())
     }
 
-    pub fn splat(value: T) -> Self {
+    pub const fn splat(value: T) -> Self {
         Self::build(value)
     }
 }
@@ -274,7 +274,7 @@ where
         Self::build(inner)
     }
 
-    pub fn splat(value: T) -> Self {
+    pub const fn splat(value: T) -> Self {
         Self::build([[value; 2]; 2])
     }
 }
@@ -507,7 +507,7 @@ where
         Self::build(inner)
     }
 
-    pub fn splat(value: T) -> Self {
+    pub const fn splat(value: T) -> Self {
         Self::build([[value; 3]; 3])
     }
 }
@@ -764,7 +764,7 @@ where
         Self::build(inner)
     }
 
-    pub fn splat(value: T) -> Self {
+    pub const fn splat(value: T) -> Self {
         Self::build([[value; 4]; 4])
     }
 }
@@ -1038,7 +1038,7 @@ where
         Self::build(inner)
     }
 
-    pub fn splat(value: T) -> Self {
+    pub const fn splat(value: T) -> Self {
         Self::build([[value; 5]; 5])
     }
 }
@@ -1279,7 +1279,7 @@ where
         Self::build(inner)
     }
 
-    pub fn splat(value: T) -> Self {
+    pub const fn splat(value: T) -> Self {
         Self::build([[value; N]; N])
     }
 }
@@ -1472,7 +1472,7 @@ where
         Self::build([[T::zero(); N]; M])
     }
 
-    pub fn splat(value: T) -> Self {
+    pub const fn splat(value: T) -> Self {
         Self::build([[value; N]; M])
     }
 }

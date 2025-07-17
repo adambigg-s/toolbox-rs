@@ -154,6 +154,19 @@ impl<T> Vector2<T> {
 
 impl<T> Vector2<T>
 where
+    T: Scalar,
+{
+    pub const fn array(&self) -> [T; 2] {
+        [self.x, self.y]
+    }
+
+    pub const fn splat(value: T) -> Self {
+        Self { x: value, y: value }
+    }
+}
+
+impl<T> Vector2<T>
+where
     T: Numeric<T>,
 {
     pub fn zeros() -> Self {
@@ -162,10 +175,6 @@ where
 
     pub fn determinant(self, other: Self) -> T {
         self.x * other.y - self.y * other.x
-    }
-
-    pub fn array(&self) -> [T; 2] {
-        [self.x, self.y]
     }
 }
 
@@ -300,6 +309,19 @@ impl<T> Vector3<T> {
 
 impl<T> Vector3<T>
 where
+    T: Scalar,
+{
+    pub const fn array(&self) -> [T; 3] {
+        [self.x, self.y, self.z]
+    }
+
+    pub const fn splat(value: T) -> Self {
+        Self { x: value, y: value, z: value }
+    }
+}
+
+impl<T> Vector3<T>
+where
     T: Numeric<T>,
 {
     pub fn zeros() -> Self {
@@ -312,10 +334,6 @@ where
             self.z * other.x - self.x * other.z,
             self.x * other.y - self.y * other.x,
         )
-    }
-
-    pub fn array(&self) -> [T; 3] {
-        [self.x, self.y, self.z]
     }
 }
 
@@ -451,14 +469,23 @@ impl<T> Vector4<T> {
 
 impl<T> Vector4<T>
 where
+    T: Scalar,
+{
+    pub const fn array(&self) -> [T; 4] {
+        [self.x, self.y, self.z, self.w]
+    }
+
+    pub const fn splat(value: T) -> Self {
+        Self { x: value, y: value, z: value, w: value }
+    }
+}
+
+impl<T> Vector4<T>
+where
     T: Numeric<T>,
 {
     pub fn zeros() -> Self {
         Self { x: T::zero(), y: T::zero(), z: T::zero(), w: T::zero() }
-    }
-
-    pub fn array(&self) -> [T; 4] {
-        [self.x, self.y, self.z, self.w]
     }
 }
 
@@ -584,6 +611,19 @@ impl<T> Vector5<T> {
 
 impl<T> Vector5<T>
 where
+    T: Scalar,
+{
+    pub const fn array(&self) -> [T; 5] {
+        [self.x, self.y, self.z, self.w, self.t]
+    }
+
+    pub const fn splat(value: T) -> Self {
+        Self { x: value, y: value, z: value, w: value, t: value }
+    }
+}
+
+impl<T> Vector5<T>
+where
     T: Numeric<T>,
 {
     pub fn zeros() -> Self {
@@ -594,10 +634,6 @@ where
             w: T::zero(),
             t: T::zero(),
         }
-    }
-
-    pub fn array(&self) -> [T; 5] {
-        [self.x, self.y, self.z, self.w, self.t]
     }
 }
 
@@ -709,9 +745,13 @@ impl<T, const N: usize> VectorN<T, N> {
 
 impl<T, const N: usize> VectorN<T, N>
 where
-    T: Numeric<T>,
+    T: Scalar,
 {
-    pub fn array(&self) -> [T; N] {
+    pub const fn splat(value: T) -> Self {
+        Self::build([value; N])
+    }
+
+    pub const fn array(&self) -> [T; N] {
         self.inner
     }
 }
