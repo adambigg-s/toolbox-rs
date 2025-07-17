@@ -56,7 +56,7 @@ where
 
     #[inline]
     fn index(&self, x: usize, y: usize) -> usize {
-        y * self.width + x
+        self.width * y + x
     }
 }
 
@@ -120,6 +120,6 @@ where
 
     #[inline]
     fn index(&self, x: usize, y: usize, z: usize) -> usize {
-        z * self.width * self.height + y * self.width + x
+        self.width * self.height * z + self.width * y + x
     }
 }

@@ -105,6 +105,15 @@ impl<T> Vector1<T> {
     }
 }
 
+impl<T> Vector1<T>
+where
+    T: Numeric<T>,
+{
+    pub fn zeros() -> Self {
+        Self { ele: T::zero() }
+    }
+}
+
 impl<T> BasicVectorOps<T> for Vector1<T>
 where
     T: Numeric<T>,
@@ -147,6 +156,10 @@ impl<T> Vector2<T>
 where
     T: Numeric<T>,
 {
+    pub fn zeros() -> Self {
+        Self { x: T::zero(), y: T::zero() }
+    }
+
     pub fn determinant(self, other: Self) -> T {
         self.x * other.y - self.y * other.x
     }
@@ -289,6 +302,10 @@ impl<T> Vector3<T>
 where
     T: Numeric<T>,
 {
+    pub fn zeros() -> Self {
+        Self { x: T::zero(), y: T::zero(), z: T::zero() }
+    }
+
     pub fn cross_product(self, other: Self) -> Self {
         Self::build(
             self.y * other.z - self.z * other.y,
@@ -436,6 +453,10 @@ impl<T> Vector4<T>
 where
     T: Numeric<T>,
 {
+    pub fn zeros() -> Self {
+        Self { x: T::zero(), y: T::zero(), z: T::zero(), w: T::zero() }
+    }
+
     pub fn array(&self) -> [T; 4] {
         [self.x, self.y, self.z, self.w]
     }
@@ -565,6 +586,16 @@ impl<T> Vector5<T>
 where
     T: Numeric<T>,
 {
+    pub fn zeros() -> Self {
+        Self {
+            x: T::zero(),
+            y: T::zero(),
+            z: T::zero(),
+            w: T::zero(),
+            t: T::zero(),
+        }
+    }
+
     pub fn array(&self) -> [T; 5] {
         [self.x, self.y, self.z, self.w, self.t]
     }

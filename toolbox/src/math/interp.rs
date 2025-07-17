@@ -1,6 +1,5 @@
 use std::ops::Add;
 use std::ops::Div;
-use std::ops::Mul;
 use std::ops::Sub;
 
 use super::traits::Numeric;
