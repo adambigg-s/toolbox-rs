@@ -156,7 +156,7 @@ pub struct Matrix1<T> {
 impl<T> Matrix1<T> {
     pub const DIM: usize = 1;
 
-    pub fn build(ele: T) -> Self {
+    pub const fn build(ele: T) -> Self {
         Self { ele }
     }
 }
@@ -251,7 +251,7 @@ macro_rules! mat2 {
 impl<T> Matrix2<T> {
     pub const DIM: usize = 2;
 
-    pub fn build(inner: [[T; 2]; 2]) -> Self {
+    pub const fn build(inner: [[T; 2]; 2]) -> Self {
         Self { inner }
     }
 }
@@ -484,7 +484,7 @@ macro_rules! mat3 {
 impl<T> Matrix3<T> {
     pub const DIM: usize = 3;
 
-    pub fn build(inner: [[T; 3]; 3]) -> Self {
+    pub const fn build(inner: [[T; 3]; 3]) -> Self {
         Self { inner }
     }
 }
@@ -741,7 +741,7 @@ macro_rules! mat4 {
 impl<T> Matrix4<T> {
     pub const DIM: usize = 4;
 
-    pub fn build(inner: [[T; 4]; 4]) -> Self {
+    pub const fn build(inner: [[T; 4]; 4]) -> Self {
         Self { inner }
     }
 }
@@ -1015,7 +1015,7 @@ macro_rules! mat5 {
 impl<T> Matrix5<T> {
     pub const DIM: usize = 5;
 
-    pub fn build(inner: [[T; 5]; 5]) -> Self {
+    pub const fn build(inner: [[T; 5]; 5]) -> Self {
         Self { inner }
     }
 }
@@ -1256,7 +1256,7 @@ pub struct MatrixN<T, const N: usize> {
 }
 
 impl<T, const N: usize> MatrixN<T, N> {
-    pub fn build(inner: [[T; N]; N]) -> Self {
+    pub const fn build(inner: [[T; N]; N]) -> Self {
         Self { inner }
     }
 }
@@ -1459,7 +1459,7 @@ pub struct MatrixMxN<T, const M: usize, const N: usize> {
 }
 
 impl<T, const M: usize, const N: usize> MatrixMxN<T, M, N> {
-    pub fn build(inner: [[T; N]; M]) -> Self {
+    pub const fn build(inner: [[T; N]; M]) -> Self {
         Self { inner }
     }
 }

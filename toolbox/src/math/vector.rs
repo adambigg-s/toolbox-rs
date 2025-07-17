@@ -100,7 +100,7 @@ macro_rules! vec1 {
 }
 
 impl<T> Vector1<T> {
-    pub fn build(ele: T) -> Self {
+    pub const fn build(ele: T) -> Self {
         Self { ele }
     }
 }
@@ -147,7 +147,7 @@ macro_rules! vec2 {
 }
 
 impl<T> Vector2<T> {
-    pub fn build(x: T, y: T) -> Self {
+    pub const fn build(x: T, y: T) -> Self {
         Self { x, y }
     }
 }
@@ -293,7 +293,7 @@ macro_rules! vec3 {
 }
 
 impl<T> Vector3<T> {
-    pub fn build(x: T, y: T, z: T) -> Self {
+    pub const fn build(x: T, y: T, z: T) -> Self {
         Self { x, y, z }
     }
 }
@@ -444,7 +444,7 @@ macro_rules! vec4 {
 }
 
 impl<T> Vector4<T> {
-    pub fn build(x: T, y: T, z: T, w: T) -> Self {
+    pub const fn build(x: T, y: T, z: T, w: T) -> Self {
         Self { x, y, z, w }
     }
 }
@@ -577,7 +577,7 @@ macro_rules! vec5 {
 }
 
 impl<T> Vector5<T> {
-    pub fn build(x: T, y: T, z: T, w: T, t: T) -> Self {
+    pub const fn build(x: T, y: T, z: T, w: T, t: T) -> Self {
         Self { x, y, z, w, t }
     }
 }
@@ -702,7 +702,7 @@ pub struct VectorN<T, const N: usize> {
 }
 
 impl<T, const N: usize> VectorN<T, N> {
-    pub fn build(inner: [T; N]) -> Self {
+    pub const fn build(inner: [T; N]) -> Self {
         Self { inner }
     }
 }
