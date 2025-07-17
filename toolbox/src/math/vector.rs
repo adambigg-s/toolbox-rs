@@ -1,9 +1,13 @@
 use std::ops::Add;
+use std::ops::AddAssign;
 use std::ops::Div;
+use std::ops::DivAssign;
 use std::ops::Mul;
+use std::ops::MulAssign;
 use std::ops::Neg;
 use std::ops::Rem;
 use std::ops::Sub;
+use std::ops::SubAssign;
 
 use super::traits::FloatNumber;
 use super::traits::Numeric;
@@ -215,6 +219,16 @@ where
     }
 }
 
+impl<T> AddAssign<Self> for Vector2<T>
+where
+    T: Numeric<T>,
+{
+    fn add_assign(&mut self, other: Self) {
+        self.x += other.x;
+        self.y += other.y;
+    }
+}
+
 impl<T> Sub<Self> for Vector2<T>
 where
     T: Numeric<T>,
@@ -226,6 +240,16 @@ where
     }
 }
 
+impl<T> SubAssign<Self> for Vector2<T>
+where
+    T: Numeric<T>,
+{
+    fn sub_assign(&mut self, other: Self) {
+        self.x -= other.x;
+        self.y -= other.y;
+    }
+}
+
 impl<T> Mul<T> for Vector2<T>
 where
     T: Numeric<T>,
@@ -234,6 +258,16 @@ where
 
     fn mul(self, scalar: T) -> Self::Output {
         Self::build(self.x * scalar, self.y * scalar)
+    }
+}
+
+impl<T> MulAssign<T> for Vector2<T>
+where
+    T: Numeric<T>,
+{
+    fn mul_assign(&mut self, scalar: T) {
+        self.x *= scalar;
+        self.y *= scalar;
     }
 }
 
@@ -256,6 +290,16 @@ where
 
     fn div(self, scalar: T) -> Self::Output {
         Self::build(self.x / scalar, self.y / scalar)
+    }
+}
+
+impl<T> DivAssign<T> for Vector2<T>
+where
+    T: Numeric<T>,
+{
+    fn div_assign(&mut self, scalar: T) {
+        self.x /= scalar;
+        self.y /= scalar;
     }
 }
 
@@ -374,6 +418,17 @@ where
     }
 }
 
+impl<T> AddAssign<Self> for Vector3<T>
+where
+    T: Numeric<T>,
+{
+    fn add_assign(&mut self, other: Self) {
+        self.x += other.x;
+        self.y += other.y;
+        self.z += other.z;
+    }
+}
+
 impl<T> Sub<Self> for Vector3<T>
 where
     T: Numeric<T>,
@@ -385,6 +440,17 @@ where
     }
 }
 
+impl<T> SubAssign<Self> for Vector3<T>
+where
+    T: Numeric<T>,
+{
+    fn sub_assign(&mut self, other: Self) {
+        self.x -= other.x;
+        self.y -= other.y;
+        self.z -= other.z;
+    }
+}
+
 impl<T> Mul<T> for Vector3<T>
 where
     T: Numeric<T>,
@@ -393,6 +459,17 @@ where
 
     fn mul(self, scalar: T) -> Self::Output {
         Self::build(self.x * scalar, self.y * scalar, self.z * scalar)
+    }
+}
+
+impl<T> MulAssign<T> for Vector3<T>
+where
+    T: Numeric<T>,
+{
+    fn mul_assign(&mut self, scalar: T) {
+        self.x *= scalar;
+        self.y *= scalar;
+        self.z *= scalar;
     }
 }
 
@@ -415,6 +492,17 @@ where
 
     fn div(self, scalar: T) -> Self::Output {
         Self::build(self.x / scalar, self.y / scalar, self.z / scalar)
+    }
+}
+
+impl<T> DivAssign<T> for Vector3<T>
+where
+    T: Numeric<T>,
+{
+    fn div_assign(&mut self, scalar: T) {
+        self.x /= scalar;
+        self.y /= scalar;
+        self.z /= scalar;
     }
 }
 
@@ -526,6 +614,18 @@ where
     }
 }
 
+impl<T> AddAssign<Self> for Vector4<T>
+where
+    T: Numeric<T>,
+{
+    fn add_assign(&mut self, other: Self) {
+        self.x += other.x;
+        self.y += other.y;
+        self.z += other.z;
+        self.w += other.w;
+    }
+}
+
 impl<T> Sub<Self> for Vector4<T>
 where
     T: Numeric<T>,
@@ -537,6 +637,18 @@ where
     }
 }
 
+impl<T> SubAssign<Self> for Vector4<T>
+where
+    T: Numeric<T>,
+{
+    fn sub_assign(&mut self, other: Self) {
+        self.x -= other.x;
+        self.y -= other.y;
+        self.z -= other.z;
+        self.w -= other.w;
+    }
+}
+
 impl<T> Mul<T> for Vector4<T>
 where
     T: Numeric<T>,
@@ -545,6 +657,18 @@ where
 
     fn mul(self, scalar: T) -> Self::Output {
         Self::build(self.x * scalar, self.y * scalar, self.z * scalar, self.w * scalar)
+    }
+}
+
+impl<T> MulAssign<T> for Vector4<T>
+where
+    T: Numeric<T>,
+{
+    fn mul_assign(&mut self, scalar: T) {
+        self.x *= scalar;
+        self.y *= scalar;
+        self.z *= scalar;
+        self.w *= scalar;
     }
 }
 
@@ -567,6 +691,18 @@ where
 
     fn div(self, scalar: T) -> Self::Output {
         Self::build(self.x / scalar, self.y / scalar, self.z / scalar, self.w / scalar)
+    }
+}
+
+impl<T> DivAssign<T> for Vector4<T>
+where
+    T: Numeric<T>,
+{
+    fn div_assign(&mut self, scalar: T) {
+        self.x /= scalar;
+        self.y /= scalar;
+        self.z /= scalar;
+        self.w /= scalar;
     }
 }
 
@@ -674,6 +810,19 @@ where
     }
 }
 
+impl<T> AddAssign<Self> for Vector5<T>
+where
+    T: Numeric<T>,
+{
+    fn add_assign(&mut self, other: Self) {
+        self.x += other.x;
+        self.y += other.y;
+        self.z += other.z;
+        self.w += other.w;
+        self.t += other.t;
+    }
+}
+
 impl<T> Sub<Self> for Vector5<T>
 where
     T: Numeric<T>,
@@ -685,6 +834,19 @@ where
     }
 }
 
+impl<T> SubAssign<Self> for Vector5<T>
+where
+    T: Numeric<T>,
+{
+    fn sub_assign(&mut self, other: Self) {
+        self.x -= other.x;
+        self.y -= other.y;
+        self.z -= other.z;
+        self.w -= other.w;
+        self.t -= other.t;
+    }
+}
+
 impl<T> Mul<T> for Vector5<T>
 where
     T: Numeric<T>,
@@ -693,6 +855,19 @@ where
 
     fn mul(self, scalar: T) -> Self::Output {
         Self::build(self.x * scalar, self.y * scalar, self.z * scalar, self.w * scalar, self.t * scalar)
+    }
+}
+
+impl<T> MulAssign<T> for Vector5<T>
+where
+    T: Numeric<T>,
+{
+    fn mul_assign(&mut self, scalar: T) {
+        self.x *= scalar;
+        self.y *= scalar;
+        self.z *= scalar;
+        self.w *= scalar;
+        self.t *= scalar;
     }
 }
 
@@ -715,6 +890,19 @@ where
 
     fn div(self, scalar: T) -> Self::Output {
         Self::build(self.x / scalar, self.y / scalar, self.z / scalar, self.w / scalar, self.t / scalar)
+    }
+}
+
+impl<T> DivAssign<T> for Vector5<T>
+where
+    T: Numeric<T>,
+{
+    fn div_assign(&mut self, scalar: T) {
+        self.x /= scalar;
+        self.y /= scalar;
+        self.z /= scalar;
+        self.w /= scalar;
+        self.t /= scalar;
     }
 }
 
@@ -816,6 +1004,19 @@ where
     }
 }
 
+impl<T, const N: usize> AddAssign<Self> for VectorN<T, N>
+where
+    T: Numeric<T>,
+{
+    fn add_assign(&mut self, other: Self) {
+        let (a, b) = (&mut self.inner, other.inner);
+
+        (0..N).for_each(|i| {
+            a[i] += b[i];
+        })
+    }
+}
+
 impl<T, const N: usize> Sub<Self> for VectorN<T, N>
 where
     T: Numeric<T>,
@@ -834,6 +1035,19 @@ where
     }
 }
 
+impl<T, const N: usize> SubAssign<Self> for VectorN<T, N>
+where
+    T: Numeric<T>,
+{
+    fn sub_assign(&mut self, other: Self) {
+        let (a, b) = (&mut self.inner, other.inner);
+
+        (0..N).for_each(|i| {
+            a[i] -= b[i];
+        })
+    }
+}
+
 impl<T, const N: usize> Mul<T> for VectorN<T, N>
 where
     T: Numeric<T>,
@@ -848,6 +1062,19 @@ where
         });
 
         Self::build(v)
+    }
+}
+
+impl<T, const N: usize> MulAssign<T> for VectorN<T, N>
+where
+    T: Numeric<T>,
+{
+    fn mul_assign(&mut self, scalar: T) {
+        let v = &mut self.inner;
+
+        (0..N).for_each(|i| {
+            v[i] *= scalar;
+        });
     }
 }
 
@@ -876,6 +1103,19 @@ where
         });
 
         Self::build(v)
+    }
+}
+
+impl<T, const N: usize> DivAssign<T> for VectorN<T, N>
+where
+    T: Numeric<T>,
+{
+    fn div_assign(&mut self, scalar: T) {
+        let v = &mut self.inner;
+
+        (0..N).for_each(|i| {
+            v[i] /= scalar;
+        });
     }
 }
 
