@@ -1,5 +1,6 @@
 use core::slice;
-use std::ops::{Index, IndexMut};
+use std::ops::Index;
+use std::ops::IndexMut;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* HEAPLESS VEC */
@@ -127,7 +128,7 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if !self.index < self.vec.len() {
+        if self.index >= self.vec.len() {
             return None;
         }
 
