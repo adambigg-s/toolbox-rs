@@ -1,4 +1,4 @@
-pub type DynamicsFunction<T, const N: usize> = fn(&[T; N]) -> [T; N];
+pub type DynamicsFunction<T, D, const N: usize> = fn(&[T; N], D) -> [T; N];
 
 pub trait NumericalIntegrationStep<T>
 where
